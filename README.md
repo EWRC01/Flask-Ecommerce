@@ -12,6 +12,8 @@ Software Development
 
 ## Virtual Env 
 
+Open a CMD or PowerShell
+
 ```powershell
 git clone https://github.com/EWRC01/Flask-Ecommerce.git
 cd Flask-Ecommerce
@@ -23,6 +25,6 @@ flask --app=app --debug run
 ## Open a Browser 
 
 ```
-https://localhost:5000
+http://localhost:5000
 ```
 
