@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+    <div id="precios" class="container">
+        <h2 class="card bg-danger text-white text-center">Precios</h2>
+        <br/>
+    
+        <div class="text-center text-white row" id="productList"></div>
+    
+        <h2 class="card bg-danger text-white text-center">Carrito de Compras</h2>
+        <br/>
+        <ul id="cartItems"></ul>
+        <h4>Precio Total: <h5 id="totalPrice"></h5></h4>
+        <div class="col">
+            <div class="row">
+                <div class="col-md-4">
+                    <form id="cleanCartForm" method="post" action="/clean">
+                        <button class="btn btn-danger" type="submit">Limpiar Carrito</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <form id="checkoutForm" method="post" action="/checkout">
+                        <button id="checkoutButton" class="btn btn-success" type="submit" disabled>Finalizar Compra</button>
+                    </form>
+                </div> 
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Submit the form and handle the response
+        $('#checkoutForm').on('submit', function(e) {
+          e.preventDefault();
+      
+          $.ajax({
+            url: $(this).attr('action'),
+            method: $(this).attr('method'),
+            dataType: 'json',
+            success: function(response) {
+              // Display the Sweet Alert notification
+              Swal.fire({
+                icon: 'success',
+                title: 'Gracias Por Tu Compra!',
+                text: response.message
+              });
+            },
+            error: function(error) {
+              console.log(error);
+              // Display an error message if the payment process fails
+              Swal.fire({
+                icon: 'error',
+                title: 'Payment Error',
+                text: 'An error occurred during payment.'
+              });
+            }
+          });
+        });
+      </script>
+    <script>
+        $(document).ready(function() {
+            let cart = []; // Array to store selected products
+
+            loadProducts();
+
+            $(document).on('click', '.add-to-cart-btn', function(event) {
+                event.preventDefault();
+                const productId = $(this).data('product-id');
+                addToCart(productId);
+            });
+
+            $('#cleanCartForm').on('submit', function(event) {
+                event.preventDefault();
+                cleanCart();
+            });
+
+            function calculateTotalPrice() {
+                let total = 0;
+                cart.forEach(function(item) {
+                    total += item.price;
+                });
+                return total;
+            }
+
+            function displayTotalPrice() {
+    const totalPrice = calculateTotalPrice();
+    $('#totalPrice').text('$' + totalPrice);
+
+    // Habilitar o deshabilitar el botón de checkout según el precio total
+    const checkoutButton = $('#checkoutButton');
+    if (cart.length > 0) {
+        checkoutButton.prop('disabled', false).show();
+    } else {
+        checkoutButton.prop('disabled', true).show();
+    }
+}
+
+            function loadProducts() {
+                $.ajax({
+                    url: '/products',
+                    type: 'GET',
+                    success: function(products) {
+                        displayProducts(products);
+                    }
+                });
+            }
+
+            function displayProducts(products) {
+                const productList = $('#productList');
+                productList.empty();
+
+                products.forEach(function(product) {
+                    const col = $('<div>').addClass('col-md-4');
+                    const card = $('<div>').addClass('card border-dark text-center text-black');
+                    const cardBody = $('<div>').addClass('card-body');
+                    const productName = $('<h3>').addClass('card-title').text(product.name);
+                    const productDescription = $('<p>').addClass('card-text text-black text-center').text(product.description)
+                    const productPrice = $('<h4>').addClass('card-text').text('$' + product.price);
+                    const addToCartButton = $('<button>').addClass('add-to-cart-btn btn btn-danger').data('product-id', product.id).text('Añadir al carrito');
+
+                    cardBody.append(productName, productDescription, productPrice, addToCartButton);
+                    card.append(cardBody);
+                    col.append(card);
+                    col.append($('<br/>')); // Add horizontal rule
+                    productList.append(col);
+                });
+            }
+
+            function addToCart(productId) {
+    $.ajax({
+        url: '/',
+        type: 'POST',
+        data: {
+            'product_id': productId
+        },
+        success: function(product) {
+            cart.push(product); // Add the selected product to the cart array
+            const card = $('<div>').addClass('card border-dark mb-4 text-center');
+            const cardHeader = $('<div>').addClass('card-header border-dark').text(product.name);
+            const cardFooter = $('<div>').addClass('card-footer border-dark');
+            const deleteButton = $('<button>').addClass('delete-btn btn btn-danger').data('product-id', product.id).text('Eliminar');
+            deleteButton.on('click', function(event) {
+                event.preventDefault();
+                const productId = $(this).data('product-id');
+                removeFromCart(productId);
+            });
+            cardFooter.append(deleteButton);
+            card.append(cardHeader, cardFooter);
+            $('#cartItems').append(card);
+            displayTotalPrice(); // Update the total price after adding to the cart
+        }
+    });
+}
+
+
+function removeFromCart(productId) {
+    const index = cart.findIndex(item => item.id === productId);
+    if (index > -1) {
+        cart.splice(index, 1); // Remove the product from the cart array
+        $('#cartItems .card').eq(index).remove(); // Remove the corresponding card from the cart
+        displayTotalPrice(); // Update the total price after removing from the cart
+    }
+}
+
+
+
+
+            function cleanCart() {
+                $.ajax({
+                    url: '/clean',
+                    type: 'POST',
+                    success: function() {
+                        cart = []; // Empty the cart array
+                        $('#cartItems').empty();
+                        displayTotalPrice(); // Update the total price after cleaning the cart
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
