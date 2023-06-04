@@ -28,3 +28,16 @@ flask --app=app --debug run
 http://localhost:5000
 ```
 
+# Installation on Linux
+
+## Virtual Env
+
+```bash
+git clone https://github.com/EWRC01/Flask-Ecommerce.git
+cd Flask-Ecommerce
+python3 -m venv .
+source bin/activate
+pip3 install -r requeriments.txt
+flask --app=app --debug run
+```
+
