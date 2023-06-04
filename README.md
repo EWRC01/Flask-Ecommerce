@@ -40,4 +40,8 @@ source bin/activate
 pip3 install -r requeriments.txt
 flask --app=app --debug run
 ```
+## Open a Browser 
 
+```
+http://localhost:5000
+```
