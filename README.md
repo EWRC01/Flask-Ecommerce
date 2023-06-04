@@ -45,3 +45,10 @@ flask --app=app --debug run
 ```
 http://localhost:5000
 ```
+# Preview
+![](https://github.com/EWRC01/Flask-Ecommerce/blob/main/previews/1.png)
+![](https://github.com/EWRC01/Flask-Ecommerce/blob/main/previews/2.png)
+![](https://github.com/EWRC01/Flask-Ecommerce/blob/main/previews/3.png)
+![](https://github.com/EWRC01/Flask-Ecommerce/blob/main/previews/4.png)
+![](https://github.com/EWRC01/Flask-Ecommerce/blob/main/previews/5.png)
+![](https://github.com/EWRC01/Flask-Ecommerce/blob/main/previews/6.png)
