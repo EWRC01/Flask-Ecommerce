@@ -10,10 +10,10 @@ Software Development
 
 # Running on Docker 🐳
 
-```Docker
+```yml
 git clone https://github.com/EWRC01/Flask-Ecommerce.git
 cd Flask-Ecommerce
-docker compose up -d
+docker compose up -d #If don't Work use this > docker-compose up -d
 ```
 
 ## Open a Browser 🌐
