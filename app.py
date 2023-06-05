@@ -39,3 +39,6 @@ def clean_cart():
 @app.route('/checkout', methods=['POST'])
 def checkout():
     return jsonify({'message': 'Pago Completado!'})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
